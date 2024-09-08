@@ -117,23 +117,23 @@
   <script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    $(function() {
+    $(function() {//ensures that the code inside it runs only after the document is fully loaded.
 
       // add new employee ajax request
-      $("#add_employee_form").submit(function(e) {
-        e.preventDefault();
-        const fd = new FormData(this);
-        $("#add_employee_btn").text('Adding...');
-        $.ajax({
+      $("#add_employee_form").submit(function(e) {// form with the ID add_employee_form. When this form is submitted, the function inside will execute.
+        e.preventDefault();//Prevents the default form submission behavior, which would normally reload the page.
+        const fd = new FormData(this);//Creates a new FormData object, which collects all the form fields and their values, including files.
+        $("#add_employee_btn").text('Adding...');// to indicate that the form is being processed.
+        $.ajax({// function takes an object with various options that define the request.
           url: '{{ route('store') }}',
           method: 'post',
           data: fd,
-          cache: false,
+          cache: false,//These options are set to false to prevent jQuery from processing or setting the content type, which is necessary when sending FormData with files.
           contentType: false,
           processData: false,
-          dataType: 'json',
-          success: function(response) {
-            if (response.status == 200) {
+          dataType: 'json',// to indicate that the response will be in JSON format.
+          success: function(response) {//This function is executed if the request is successful.
+            if (response.status == 200) {//This checks if the response contains the expected status code, which is 200.
               Swal.fire(
                 'Added!',
                 'Employee Added Successfully!',
@@ -141,32 +141,32 @@
               )
               fetchAllEmployees();
             }
-            $("#add_employee_btn").text('Add Employee');
-            $("#add_employee_form")[0].reset();
-            $("#addEmployeeModal").modal('hide');
+            $("#add_employee_btn").text('Add Employee');// to indicate that the form has finished processing.
+            $("#add_employee_form")[0].reset();// resets the form after it has been submitted.
+            $("#addEmployeeModal").modal('hide');  // closes the modal after the form has been submitted.
           }
         });
       });
 
       // edit employee ajax request
-      $(document).on('click', '.editIcon', function(e) {
-        e.preventDefault();
-        let id = $(this).attr('id');
-        $.ajax({
+      $(document).on('click', '.editIcon', function(e) {// when the edit icon is clicked
+        e.preventDefault();//Prevents the default form submission behavior, which would normally reload the page.
+        let id = $(this).attr('id');// gets the id of the employee that was clicked
+        $.ajax({// function takes an object with various options that define the request.
           url: '{{ route('edit') }}',
           method: 'get',
           data: {
             id: id,
-            _token: '{{ csrf_token() }}'
+            _token: '{{ csrf_token() }}'// adds the CSRF token to the request
           },
           success: function(response) {
             $("#fname").val(response.first_name);
             $("#lname").val(response.last_name);
             $("#email").val(response.email);
             $("#avatar").html(
-              `<img src="storage/uploads/${response.avatar}" width="100" class="img-fluid img-thumbnail">`);
-            $("#emp_id").val(response.id);
-            $("#emp_avatar").val(response.avatar);
+              `<img src="storage/uploads/${response.avatar}" width="100" class="img-fluid img-thumbnail">`);// adds the avatar to the modal
+            $("#emp_id").val(response.id);// adds the id to the modal
+            $("#emp_avatar").val(response.avatar);// adds the avatar to the modal
           }
         });
       });
@@ -174,7 +174,7 @@
       // update employee ajax request
       $("#edit_employee_form").submit(function(e) {
         e.preventDefault();
-        const fd = new FormData(this);
+        const fd = new FormData(this);//Creates a new FormData object, which collects all the form fields and their values, including files.
         $("#edit_employee_btn").text('Updating...');
         $.ajax({
           url: '{{ route('update') }}',
@@ -191,7 +191,7 @@
                 'Employee Updated Successfully!',
                 'success'
               )
-              fetchAllEmployees();
+              fetchAllEmployees();// fetches the updated employee list
             }
             $("#edit_employee_btn").text('Update Employee');
             $("#edit_employee_form")[0].reset();
@@ -203,7 +203,7 @@
       // delete employee ajax request
       $(document).on('click', '.deleteIcon', function(e) {
         e.preventDefault();
-        let id = $(this).attr('id');
+        let id = $(this).attr('id');// gets the id of the employee that was clicked
         let csrf = '{{ csrf_token() }}';
         Swal.fire({
           title: 'Are you sure?',
@@ -214,7 +214,7 @@
           cancelButtonColor: '#d33',
           confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
-          if (result.isConfirmed) {
+          if (result.isConfirmed) {// if the user confirms that they want to delete the employee
             $.ajax({
               url: '{{ route('delete') }}',
               method: 'delete',
@@ -244,9 +244,9 @@
           url: '{{ route('fetchAll') }}',
           method: 'get',
           success: function(response) {
-            $("#show_all_employees").html(response);
-            $("table").DataTable({
-              order: [0, 'desc']
+            $("#show_all_employees").html(response);// adds the response to the div with id show_all_employees
+            $("table").DataTable({// initializes the DataTable plugin
+              order: [0, 'desc']// sets the order of the table to be sorted by the first column in descending order
             });
           }
         });
